@@ -24,7 +24,6 @@ async fn main() -> Result<()> {
         }],
         temperature: Some(0.7),
         top_p: Some(0.95),
-        max_tokens: Some(256),
         stream: Some(false),
     };
 
