@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tencentcloud-hunyuan-sdk = "0.1.0"
+tencentcloud-hunyuan-sdk = "0.1.1"
 ```
 
 ## Quick Start
