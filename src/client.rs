@@ -223,6 +223,9 @@ impl Client {
             self.credential.secret_id, credential_scope, signed_headers, signature
         );
         dbg!(&authorization);
+        if let Err(e) = HeaderValue::from_str(&authorization) {
+            dbg!(&e);
+        }
         headers.insert(
             "Authorization",
             HeaderValue::from_str(&authorization).unwrap(),
