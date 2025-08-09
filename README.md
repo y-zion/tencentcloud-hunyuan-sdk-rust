@@ -132,8 +132,6 @@ cargo run --example chat
 
 This project uses the license provided in `LICENSE`.
 
-```markdown
 ## Acknowledgments
 
 This SDK is based on the [TencentCloud Go SDK (Hunyuan v20230901)](https://github.com/TencentCloud/tencentcloud-sdk-go/tree/master/tencentcloud/hunyuan/v20230901) implementation by [Cursor](https://cursor.com) and follows the same API patterns and structure for consistency across different language SDKs.
-```
