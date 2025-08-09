@@ -242,6 +242,9 @@ impl Client {
         let status = resp.status();
         let text = resp.text().await?;
 
+        dbg!(&status);
+        dbg!(&text);
+
         if !status.is_success() {
             // Try to decode TencentCloud style error
             let err: Result<TencentCloudErrorResponse, _> = serde_json::from_str(&text);
