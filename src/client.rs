@@ -222,6 +222,7 @@ impl Client {
             "TC3-HMAC-SHA256 Credential={}/{}, SignedHeaders={}, Signature={}",
             self.credential.secret_id, credential_scope, signed_headers, signature
         );
+        dbg!(&authorization);
         headers.insert(
             "Authorization",
             HeaderValue::from_str(&authorization).unwrap(),
