@@ -43,8 +43,6 @@ pub struct ChatCompletionsRequest {
     pub temperature: Option<f32>,
     #[serde(rename = "TopP")]
     pub top_p: Option<f32>,
-    #[serde(rename = "MaxTokens")]
-    pub max_tokens: Option<u32>,
     #[serde(rename = "Stream")]
     pub stream: Option<bool>,
     // Add other fields as needed per upstream API
