@@ -14,6 +14,7 @@ async fn main() -> Result<()> {
             token: None,
         })
         .region(Region::ApGuangzhou)
+        .debug(true) // or set env var TENCENTCLOUD_SDK_DEBUG=true
         .build();
 
     let req = ChatCompletionsRequest {

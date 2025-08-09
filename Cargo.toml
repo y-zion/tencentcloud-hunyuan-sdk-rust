@@ -1,6 +1,6 @@
 [package]
 name = "tencentcloud-hunyuan-sdk"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Yzion Open-Source <open-source@y-zion.com>"]
 description = "TencentCloud Hunyuan SDK for Rust"

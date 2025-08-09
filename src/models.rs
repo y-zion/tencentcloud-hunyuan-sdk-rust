@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
 
+/// Generic Tencent Cloud success response envelope.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TencentCloudResponse<T> {
     #[serde(rename = "Response")]
     pub response: T,
 }
 
+/// Generic Tencent Cloud error response envelope.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TencentCloudErrorResponse {
     #[serde(rename = "RequestId")]
@@ -14,6 +16,7 @@ pub struct TencentCloudErrorResponse {
     pub error: Option<ErrorContent>,
 }
 
+/// Error content as returned by Tencent Cloud.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorContent {
     #[serde(rename = "Code")]
@@ -25,6 +28,7 @@ pub struct ErrorContent {
 // Minimal ChatCompletions models based on common TencentCloud LLM APIs.
 // Reference: Go SDK hunyuan/v20230901 (actions like ChatCompletions)
 
+/// Chat message used in `ChatCompletionsRequest`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Message {
     #[serde(rename = "Role")]
@@ -33,6 +37,7 @@ pub struct Message {
     pub content: String,
 }
 
+/// Request for the `ChatCompletions` action.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatCompletionsRequest {
     #[serde(rename = "Model")]
@@ -48,6 +53,7 @@ pub struct ChatCompletionsRequest {
     // Add other fields as needed per upstream API
 }
 
+/// Message inside a choice in `ChatCompletionsResponse`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatChoiceMessage {
     #[serde(rename = "Role")]
@@ -56,6 +62,7 @@ pub struct ChatChoiceMessage {
     pub content: Option<String>,
 }
 
+/// Single choice in `ChatCompletionsResponse`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatChoice {
     #[serde(rename = "Index")]
@@ -66,6 +73,7 @@ pub struct ChatChoice {
     pub finish_reason: Option<String>,
 }
 
+/// Token usage statistics returned by the service.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Usage {
     #[serde(rename = "PromptTokens")]
@@ -76,6 +84,7 @@ pub struct Usage {
     pub total_tokens: Option<u32>,
 }
 
+/// Inner payload for `ChatCompletionsResponse`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatCompletionsResponseInner {
     #[serde(rename = "RequestId")]
@@ -88,4 +97,5 @@ pub struct ChatCompletionsResponseInner {
     pub usage: Option<Usage>,
 }
 
+/// Type alias for the full `ChatCompletions` response envelope.
 pub type ChatCompletionsResponse = TencentCloudResponse<ChatCompletionsResponseInner>;

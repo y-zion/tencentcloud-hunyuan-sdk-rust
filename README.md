@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tencentcloud-hunyuan-sdk = "0.1.1"
+tencentcloud-hunyuan-sdk = "0.1.2"
 ```
 
 ## Quick Start
@@ -35,6 +35,7 @@ async fn main() -> anyhow::Result<()> {
     let client: Client = ClientBuilder::new()
         .credential(Credential { secret_id, secret_key, token: None })
         .region(Region::ApGuangzhou)
+        .debug(true) // or set env var TENCENTCLOUD_SDK_DEBUG=true
         .build();
 
     let req = ChatCompletionsRequest {
@@ -44,7 +45,7 @@ async fn main() -> anyhow::Result<()> {
         ],
         temperature: Some(0.7),
         top_p: Some(0.95),
-        max_tokens: Some(256),
+        // Add more fields as needed per API
         stream: Some(false),
     };
 
@@ -73,7 +74,7 @@ Optionally, if you use temporary credentials, provide session token through `Cre
 The default endpoint is `hunyuan.tencentcloudapi.com` and the default region is `ap-guangzhou`.
 
 ```rust
-use tencentcloud_hunyuan::{ClientBuilder, Credential, Region};
+use tencentcloud_hunyuan_sdk::{ClientBuilder, Credential, Region};
 
 let client = ClientBuilder::new()
     .credential(Credential { secret_id, secret_key, token: None })
@@ -105,6 +106,22 @@ match client.chat_completions(&req).await {
     Err(e) => eprintln!("error: {}", e),
 }
 ```
+
+## Debug Logging
+
+You can enable SDK debug logs to print key request/response information with sensitive fields masked.
+
+- Enable via builder: `ClientBuilder::new().debug(true)`
+- Or via environment variable: set `TENCENTCLOUD_SDK_DEBUG=true` (also accepts `1`/`on`)
+
+When enabled, the SDK prints:
+- tc3_sign details: credential scope, hashes, and a masked signature
+- Request summary: action, URL, region, presence of token
+- Selected headers with masked `Authorization`
+- Request body JSON
+- Response status and body, and parsed error payloads if any
+
+Note: Do not post debug logs publicly; while signatures and secrets are masked, request/response bodies may contain sensitive data.
 
 ## Generic Actions
 
