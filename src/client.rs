@@ -5,7 +5,7 @@ use reqwest::Client as HttpClient;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use thiserror::Error;
-use time::OffsetDateTime;
+use time::{format_description, OffsetDateTime};
 
 const SERVICE: &str = "hunyuan";
 const VERSION: &str = "2023-09-01";
@@ -145,7 +145,7 @@ impl Client {
         // 2. String to sign
         let date = OffsetDateTime::from_unix_timestamp(timestamp)
             .unwrap()
-            .format(&time::format_description::parse("%Y-%m-%d").unwrap())
+            .format(&format_description::parse("[Year]-[Month]-[Day]").unwrap())
             .unwrap();
         let credential_scope = format!("{}/{}/tc3_request", date, SERVICE);
         let string_to_sign = format!(
