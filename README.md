@@ -66,8 +66,61 @@ Optionally, if you use temporary credentials, provide session token through `Cre
 
 - **Client builder**: configure region and custom endpoint
 - **TC3 signing**: compliant with TencentCloud TC3-HMAC-SHA256
-- **Async HTTP**: `reqwest` with `rustls`
+- **Async HTTP**: `reqwest` with configurable TLS backends
 - **Models**: request/response structs for `ChatCompletions` plus standard response envelope
+
+## TLS Backends
+
+This SDK provides two TLS backends for HTTP requests:
+
+- **`rustls-tls`** (default): Uses the `rustls` TLS implementation. This is the default and recommended for most use cases.
+- **`native-tls`**: Uses the system's native TLS implementation (OpenSSL on Linux/macOS, SChannel on Windows).
+
+## Usage
+
+### Default (rustls-tls)
+
+```toml
+[dependencies]
+tencentcloud-hunyuan-sdk = "0.1.2"
+```
+
+### Using native-tls
+
+```toml
+[dependencies]
+tencentcloud-hunyuan-sdk = { version = "0.1.2", default-features = false, features = ["native-tls"] }
+```
+
+## Docker Deployment
+
+### Important: CA Certificates Required
+
+When using the default `rustls-tls` feature in Docker containers, you **must** ensure the container has proper CA certificates installed. The `rustls` backend requires these to verify SSL certificates.
+
+#### Option 1: Install CA certificates in your Docker image
+
+```dockerfile
+# Debian/Ubuntu
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Alpine
+RUN apk add --no-cache ca-certificates
+
+# Copy from host (if using minimal images)
+COPY /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+```
+
+#### Option 2: Use native-tls feature
+
+If you encounter certificate issues with `rustls-tls`, switch to the `native-tls` feature which uses the system's OpenSSL and CA certificate store:
+
+```toml
+[dependencies]
+tencentcloud-hunyuan-sdk = { version = "0.1.2", default-features = false, features = ["native-tls"] }
+```
+
+This approach is equivalent to using `curl` and typically works out-of-the-box in most container environments.
 
 ## Regions and Endpoints
 

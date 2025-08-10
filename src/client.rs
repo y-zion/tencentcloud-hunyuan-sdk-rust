@@ -137,9 +137,28 @@ impl ClientBuilder {
 
     /// Build the [`Client`]. Panics if credentials are not provided.
     pub fn build(self) -> Client {
-        let http = self
-            .http
-            .unwrap_or_else(|| HttpClient::builder().build().expect("reqwest client"));
+        let http = self.http.unwrap_or_else(|| {
+            #[cfg(feature = "rustls-tls")]
+            {
+                HttpClient::builder()
+                    .use_rustls_tls()
+                    .build()
+                    .expect("reqwest client")
+            }
+
+            #[cfg(feature = "native-tls")]
+            {
+                HttpClient::builder()
+                    .use_native_tls()
+                    .build()
+                    .expect("reqwest client")
+            }
+
+            #[cfg(not(any(feature = "rustls-tls", feature = "native-tls")))]
+            {
+                compile_error!("Either 'rustls-tls' or 'native-tls' feature must be enabled")
+            }
+        });
         let region = self.region.unwrap_or(Region::ApGuangzhou);
         let endpoint = self
             .endpoint

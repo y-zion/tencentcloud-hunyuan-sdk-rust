@@ -2,6 +2,12 @@ use anyhow::Result;
 use tencentcloud_hunyuan_sdk::models::{ChatCompletionsRequest, Message};
 use tencentcloud_hunyuan_sdk::{Client, ClientBuilder, Credential, Region};
 
+// To run with default rustls-tls:
+// cargo run --example chat
+//
+// To run with native-tls:
+// cargo run --example chat --features native-tls --no-default-features
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let secret_id = std::env::var("TENCENTCLOUD_SECRET_ID")?;
