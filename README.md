@@ -96,9 +96,9 @@ tencentcloud-hunyuan-sdk = { version = "0.1.2", default-features = false, featur
 
 ### Important: CA Certificates Required
 
-When using the default `rustls-tls` feature in Docker containers, you **must** ensure the container has proper CA certificates installed. The `rustls` backend requires these to verify SSL certificates.
+You **must** ensure the container has proper CA certificates installed. The `rustls` or `native-tls` backend requires these to verify SSL certificates.
 
-#### Option 1: Install CA certificates in your Docker image
+#### Install CA certificates in your Docker image
 
 ```dockerfile
 # Debian/Ubuntu
@@ -110,17 +110,6 @@ RUN apk add --no-cache ca-certificates
 # Copy from host (if using minimal images)
 COPY /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 ```
-
-#### Option 2: Use native-tls feature
-
-If you encounter certificate issues with `rustls-tls`, switch to the `native-tls` feature which uses the system's OpenSSL and CA certificate store:
-
-```toml
-[dependencies]
-tencentcloud-hunyuan-sdk = { version = "0.1.2", default-features = false, features = ["native-tls"] }
-```
-
-This approach is equivalent to using `curl` and typically works out-of-the-box in most container environments.
 
 ## Regions and Endpoints
 
