@@ -4,7 +4,6 @@ version = "0.1.2"
 edition = "2021"
 authors = ["Yzion Open-Source <open-source@y-zion.com>"]
 description = "TencentCloud Hunyuan SDK for Rust"
-license = "Apache-2.0"
 repository = "https://github.com/y-zion/tencentcloud-hunyuan-sdk-rust"
 homepage = "https://github.com/y-zion/tencentcloud-hunyuan-sdk-rust"
 documentation = "https://docs.rs/tencentcloud-hunyuan-sdk"
