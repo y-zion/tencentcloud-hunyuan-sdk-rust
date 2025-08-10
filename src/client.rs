@@ -107,6 +107,31 @@ impl ClientBuilder {
         Self::default()
     }
 
+    /// Returns whether an HTTP client has been set.
+    pub fn has_http(&self) -> bool {
+        self.http.is_some()
+    }
+
+    /// Returns whether credentials have been set.
+    pub fn has_credential(&self) -> bool {
+        self.credential.is_some()
+    }
+
+    /// Returns whether a region has been set.
+    pub fn has_region(&self) -> bool {
+        self.region.is_some()
+    }
+
+    /// Returns whether an endpoint has been set.
+    pub fn has_endpoint(&self) -> bool {
+        self.endpoint.is_some()
+    }
+
+    /// Returns whether debug mode has been set.
+    pub fn has_debug(&self) -> bool {
+        self.debug.is_some()
+    }
+
     /// Set a custom `reqwest` HTTP client.
     pub fn http(mut self, http: HttpClient) -> Self {
         self.http = Some(http);
@@ -185,7 +210,29 @@ impl Client {
         ClientBuilder::new()
     }
 
-    fn tc3_sign(
+    /// Returns the region configured for this client.
+    pub fn region(&self) -> &Region {
+        &self.region
+    }
+
+    /// Returns the endpoint configured for this client.
+    pub fn endpoint(&self) -> &str {
+        &self.endpoint
+    }
+
+    /// Returns whether debug mode is enabled for this client.
+    pub fn debug(&self) -> bool {
+        self.debug
+    }
+
+    /// Returns a reference to the credentials used by this client.
+    pub fn credential(&self) -> &Credential {
+        &self.credential
+    }
+
+    /// Signs a request using TC3-HMAC-SHA256 algorithm.
+    /// This method is public for testing purposes.
+    pub fn tc3_sign(
         &self,
         method: &str,
         canonical_uri: &str,
@@ -246,7 +293,9 @@ impl Client {
         (signature, credential_scope)
     }
 
-    fn build_headers(&self, action: &str, _json_body: &str, timestamp: i64) -> HeaderMap {
+    /// Builds the headers for a request.
+    /// This method is public for testing purposes.
+    pub fn build_headers(&self, action: &str, _json_body: &str, timestamp: i64) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert("Host", HeaderValue::from_str(&self.endpoint).unwrap());
         headers.insert(
