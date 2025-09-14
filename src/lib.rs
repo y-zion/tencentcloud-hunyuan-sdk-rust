@@ -14,7 +14,6 @@
 //! Quick start example is available in the README and under `examples/chat.rs`.
 pub mod client;
 pub mod models;
-pub mod signing;
 
 #[cfg(test)]
 mod tests {

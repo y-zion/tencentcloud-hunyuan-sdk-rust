@@ -1,12 +1,12 @@
 use crate::models::{ChatCompletionsRequest, ChatCompletionsResponse, TencentCloudErrorResponse};
-use crate::signing::{hmac_sha256, sha256_hex};
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::Client as HttpClient;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::env;
+use tencentcloud_sign_sdk::{sha256_hex, Tc3Signer};
 use thiserror::Error;
-use time::{format_description, OffsetDateTime};
+use time::OffsetDateTime;
 
 const SERVICE: &str = "hunyuan";
 const VERSION: &str = "2023-09-01";
@@ -68,6 +68,7 @@ pub struct Client {
     region: Region,
     endpoint: String,
     debug: bool,
+    signer: Tc3Signer,
 }
 
 /// Builder for [`Client`].
@@ -194,12 +195,19 @@ impl ClientBuilder {
             _ => false,
         };
         let debug = self.debug.unwrap_or(env_debug);
+        let signer = Tc3Signer::new(
+            credential.secret_id.clone(),
+            credential.secret_key.clone(),
+            SERVICE.to_string(),
+            debug,
+        );
         Client {
             http,
             credential,
             region,
             endpoint,
             debug,
+            signer,
         }
     }
 }
@@ -242,55 +250,16 @@ impl Client {
         hashed_payload: &str,
         timestamp: i64,
     ) -> (String, String) {
-        // 1. Canonical request
-        let canonical_request = format!(
-            "{method}\n{uri}\n{query}\n{headers}\n{signed}\n{payload}",
-            method = method,
-            uri = canonical_uri,
-            query = canonical_querystring,
-            headers = canonical_headers,
-            signed = signed_headers,
-            payload = hashed_payload
+        let result = self.signer.sign(
+            method,
+            canonical_uri,
+            canonical_querystring,
+            canonical_headers,
+            signed_headers,
+            hashed_payload,
+            timestamp,
         );
-        let hashed_canonical_request = sha256_hex(&canonical_request);
-
-        // 2. String to sign
-        let date = OffsetDateTime::from_unix_timestamp(timestamp)
-            .unwrap()
-            .format(&format_description::parse("[Year]-[Month]-[Day]").unwrap())
-            .unwrap();
-        let credential_scope = format!("{}/{}/tc3_request", date, SERVICE);
-        let string_to_sign = format!(
-            "TC3-HMAC-SHA256\n{}\n{}\n{}",
-            timestamp, credential_scope, hashed_canonical_request
-        );
-
-        // 3. Signature
-        let secret_key = format!("TC3{}", self.credential.secret_key);
-        let secret_date = hmac_sha256(secret_key.as_bytes(), &date);
-        let secret_service = hmac_sha256(&secret_date, SERVICE);
-        let secret_signing = hmac_sha256(&secret_service, "tc3_request");
-        let signature = crate::signing::hmac_sha256_hex(&secret_signing, &string_to_sign);
-
-        if self.debug {
-            fn mask(v: &str) -> String {
-                let keep = 8usize;
-                if v.len() <= keep * 2 {
-                    return "***".to_string();
-                }
-                format!("{}...{}", &v[..keep], &v[v.len() - keep..])
-            }
-            let string_to_sign_hash = sha256_hex(&string_to_sign);
-            eprintln!(
-                "[hunyuan-sdk][tc3_sign] scope={} hashed_canonical_request={} string_to_sign_sha256={} signature={}",
-                credential_scope,
-                hashed_canonical_request,
-                string_to_sign_hash,
-                mask(&signature)
-            );
-        }
-
-        (signature, credential_scope)
+        (result.signature, result.credential_scope)
     }
 
     /// Builds the headers for a request.
@@ -342,7 +311,7 @@ impl Client {
         );
         let signed_headers = "content-type;host";
         let hashed_payload = sha256_hex(&body);
-        let (signature, credential_scope) = self.tc3_sign(
+        let result = self.signer.sign(
             method,
             canonical_uri,
             canonical_querystring,
@@ -352,10 +321,9 @@ impl Client {
             timestamp,
         );
 
-        let authorization = format!(
-            "TC3-HMAC-SHA256 Credential={}/{}, SignedHeaders={}, Signature={}",
-            self.credential.secret_id, credential_scope, signed_headers, signature
-        );
+        let authorization = self
+            .signer
+            .create_authorization_header(&result, signed_headers);
         headers.insert(
             "Authorization",
             HeaderValue::from_str(&authorization).unwrap(),
