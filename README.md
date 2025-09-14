@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tencentcloud-hunyuan-sdk = "0.1.3"
+tencentcloud-hunyuan-sdk = "0.1.4"
 ```
 
 ## Quick Start
@@ -82,14 +82,14 @@ This SDK provides two TLS backends for HTTP requests:
 
 ```toml
 [dependencies]
-tencentcloud-hunyuan-sdk = "0.1.3"
+tencentcloud-hunyuan-sdk = "0.1.4"
 ```
 
 ### Using native-tls
 
 ```toml
 [dependencies]
-tencentcloud-hunyuan-sdk = { version = "0.1.3", default-features = false, features = ["native-tls"] }
+tencentcloud-hunyuan-sdk = { version = "0.1.4", default-features = false, features = ["native-tls"] }
 ```
 
 ## Docker Deployment
